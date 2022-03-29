@@ -1,0 +1,26 @@
+#!/usr/bin/env python3
+import argparse,csv
+
+parser = argparse.ArgumentParser(description="Drop specified columns of csv")
+parser.add_argument('inputFile', type=str, help="Input CSV File.")
+parser.add_argument('column', type=str, help="columns to tab.")
+args = parser.parse_args()
+
+
+reader = csv.DictReader(open(args.inputFile),quotechar='"',quoting=csv.QUOTE_ALL,delimiter=',',skipinitialspace=True)
+values = {}
+column = args.column
+for row in reader:
+    if row[column] not in values:
+        values[row[column]] = 1
+    else:
+        values[row[column]] += 1
+histo = sorted(values.items(),key=lambda a:a[1])
+total = sum([h[1] for h in histo])
+for key,count in histo:
+    percent = count/total*100
+    if len(key) < 7:
+        print(f'{key}:\t\t{count:,d}\t({percent:.02f}%)')
+    else:
+        print(f'{key}:\t{count:,d}\t({percent:.02f}%)')
+print(f"total: {total:,d}")
